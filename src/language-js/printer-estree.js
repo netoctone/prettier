@@ -297,13 +297,21 @@ function formatTernaryOperator(path, options, print, operatorOptions) {
   const breakClosingParen =
     !jsxMode && parent.type === "MemberExpression" && !parent.computed;
 
+  const concatParts0 = [].concat(
+    operatorOpts.beforeParts(),
+    forceNoIndent ? concat(parts) : indent(concat(parts)),
+    operatorOpts.afterParts(breakClosingParen)
+  );
+
+  const outerParens = options.ternary === "parens" &&
+    path.getParentNode().type === "ArrowFunctionExpression";
+
+  const concatParts1 = outerParens ?
+    [].concat(["("], concatParts0, [")"]) : concatParts0;
+
   return maybeGroup(
     concat(
-      [].concat(
-        operatorOpts.beforeParts(),
-        forceNoIndent ? concat(parts) : indent(concat(parts)),
-        operatorOpts.afterParts(breakClosingParen)
-      )
+      concatParts1
     )
   );
 }
